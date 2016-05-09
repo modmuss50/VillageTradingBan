@@ -1,0 +1,109 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+    }
+}
+
+apply plugin: 'forge'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+
+repositories {
+    maven {
+        name = "Modmuss50"
+        url = "http://maven.modmuss50.me/"
+    }
+}
+
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
+version = "1.0.0"
+
+def ENV = System.getenv()
+if (ENV.BUILD_NUMBER) {
+    version = version + "." + "${System.getenv().BUILD_NUMBER}"
+}
+
+minecraft {
+    version = "1.7.10-10.13.4.1448-1.7.10"
+    replace "@MODVERSION@", project.version
+}
+
+group = 'VillageTradingBan'
+
+processResources
+        {
+            // replace stuff in mcmod.info, nothing else
+            from(sourceSets.main.resources.srcDirs) {
+                include 'mcmod.info'
+
+                // replace version and mcversion
+                // ${version}   and    ${mcversion}    are the exact strings being replaced
+                expand 'version':project.version, 'mcversion':project.minecraft.version
+            }
+
+            // copy everything else, that's not the mcmod.info
+            from(sourceSets.main.resources.srcDirs) {
+                exclude 'mcmod.info'
+            }
+        }
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'src'
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    exclude "**/*.psd"
+    classifier = 'dev'
+}
+
+jar {
+    exclude "**/*.psd"
+    classifier = 'universal'
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)){
+            include 'ic2/api/'
+            include 'forestry/api/fuels/'
+            exclude 'META-INF', 'META-INF/**', '**/*.java'
+        }
+    }
+}
+
+task apiJar(type: Jar) {
+    from sourceSets.main.allSource
+    from sourceSets.main.output
+        include 'techreborn/api/**/*'
+
+    classifier = "api"
+}
+
+apiJar.mustRunAfter deobfJar
+
+artifacts {
+    archives sourceJar
+    archives deobfJar
+    archives apiJar
+}
+
+build.dependsOn sourceJar, deobfJar, apiJar
+
