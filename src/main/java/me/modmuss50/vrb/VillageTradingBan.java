@@ -1,13 +1,14 @@
 package me.modmuss50.vrb;
 
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.EntityInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Mod(modid = "vtb", name = "VillageTradingBan", version = "1.0.0")
+@Mod(modid = "vtb", name = "VillageTradingBan", version = "2.0.0")
 public class VillageTradingBan {
 
     @Mod.EventHandler
@@ -16,8 +17,8 @@ public class VillageTradingBan {
     }
 
     @SubscribeEvent
-    public void interact(EntityInteractEvent entityInteractEvent){
-        if(entityInteractEvent.target instanceof EntityVillager){
+    public void interact(PlayerInteractEvent.EntityInteract entityInteractEvent){
+        if(entityInteractEvent.getTarget() instanceof EntityVillager){
             entityInteractEvent.setCanceled(true);
         }
     }
