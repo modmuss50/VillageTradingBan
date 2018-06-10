@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Arrays;
 
-@Mod(modid = "vtb", name = "VillageTradingBan", version = "2.0.0")
+@Mod(modid = "vtb", name = "VillageTradingBan", version = "2.0.0", acceptedMinecraftVersions = "*")
 public class VillageTradingBan {
 
     @Mod.EventHandler
